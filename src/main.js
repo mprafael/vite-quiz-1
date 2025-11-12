@@ -38,26 +38,6 @@ document.addEventListener("DOMContentLoaded", () => {
   optionsList.classList.add("container-answers");
   quizContainer.appendChild(optionsList);
 
-  // --- Función para renderizar pregunta y respuestas ---
-  function renderQuestion() {
-    const current = quizData[questionIndex];
-    questionEl.innerText = current.question;
-    optionsList.innerHTML = "";
-
-    current.answers.forEach(answer => {
-      const listItem = document.createElement("li");
-      const button = document.createElement("button");
-      button.classList.add("answer-btn");
-      button.innerText = answer;
-      listItem.appendChild(button);
-      optionsList.appendChild(listItem);
-    });
-
-    // actualizar estado de botones de navegación
-    previousButton.disabled = questionIndex === 0;
-    nextButton.disabled = questionIndex === quizData.length - 1;
-  }
-
   // --- Footer con botones ---
   const footer = document.createElement("div");
   footer.classList.add("container-footer");
@@ -77,7 +57,38 @@ document.addEventListener("DOMContentLoaded", () => {
 
   document.body.appendChild(quizContainer);
 
-  // --- Eventos ---
+  // --- Función para renderizar pregunta y respuestas ---
+  function renderQuestion() {
+    const current = quizData[questionIndex];
+    questionEl.innerText = current.question;
+    optionsList.innerHTML = "";
+
+    current.answers.forEach(answer => {
+      const listItem = document.createElement("li");
+      const button = document.createElement("button");
+      button.classList.add("answer-btn");
+      button.innerText = answer;
+
+      // Evento de selección
+      button.addEventListener("click", () => {
+        // desmarcar todas las demás opciones
+        const allButtons = optionsList.querySelectorAll(".answer-btn");
+        allButtons.forEach(btn => (btn.style.backgroundColor = "#f8f8f8"));
+
+        // marcar la seleccionada
+        button.style.backgroundColor = "#3CB371";
+      });
+
+      listItem.appendChild(button);
+      optionsList.appendChild(listItem);
+    });
+
+    // actualizar estado de los botones de navegación
+    previousButton.disabled = questionIndex === 0;
+    nextButton.disabled = questionIndex === quizData.length - 1;
+  }
+
+  // --- Eventos de navegación ---
   nextButton.addEventListener("click", () => {
     if (questionIndex < quizData.length - 1) {
       questionIndex++;
