@@ -64,15 +64,13 @@ checkButton.classList.add("footer-btn");
 checkButton.innerText = "Check";
 checkButton.disabled = true;
 
-footer.appendChild(previousButton);
-footer.appendChild(nextButton);
-footer.appendChild(checkButton);
+footer.append(previousButton, nextButton, checkButton);
 quizContainer.appendChild(footer);
 
 document.body.appendChild(quizContainer);
 
 // --- Renderizado de pregunta ---
-function renderQuestion() {
+const renderQuestion = () => {
   const current = quizData[questionIndex];
   questionEl.innerText = current.question;
   optionsList.innerHTML = "";
@@ -83,16 +81,12 @@ function renderQuestion() {
     button.classList.add("answer-btn");
     button.innerText = answer;
 
-    if (current.selected === index) {
-      button.style.backgroundColor = "#3CB371";
-    }
+    if (current.selected === index) button.style.backgroundColor = "#3CB371";
 
     button.addEventListener("click", () => {
       current.selected = index;
-      const allButtons = optionsList.querySelectorAll(".answer-btn");
-      allButtons.forEach(btn => (btn.style.backgroundColor = "#f8f8f8"));
+      optionsList.querySelectorAll(".answer-btn").forEach(btn => btn.style.backgroundColor = "#f8f8f8");
       button.style.backgroundColor = "#3CB371";
-
       checkCompletion();
     });
 
@@ -102,13 +96,12 @@ function renderQuestion() {
 
   previousButton.disabled = questionIndex === 0;
   nextButton.disabled = questionIndex === quizData.length - 1;
-}
+};
 
 // --- Comprobar si todas las preguntas están respondidas ---
-function checkCompletion() {
-  const allAnswered = quizData.every(q => q.selected !== null);
-  checkButton.disabled = !allAnswered;
-}
+const checkCompletion = () => {
+  checkButton.disabled = !quizData.every(q => q.selected !== null);
+};
 
 // --- Navegación ---
 nextButton.addEventListener("click", () => {
@@ -140,41 +133,33 @@ const modalTitle = document.createElement("h2");
 modalTitle.innerText = "Results";
 
 const modalSeparator = document.createElement("hr");
-
 const modalText = document.createElement("p");
 
-modalContent.appendChild(closeModal);
-modalContent.appendChild(modalTitle);
-modalContent.appendChild(modalSeparator);
-modalContent.appendChild(modalText);
+modalContent.append(closeModal, modalTitle, modalSeparator, modalText);
 modal.appendChild(modalContent);
 document.body.appendChild(modal);
 
-// --- Mostrar modal ---
-function showModal(correctCount) {
+// --- Mostrar/Ocultar modal ---
+const showModal = correctCount => {
   modalText.innerText = `You have ${correctCount} correct answers out of ${quizData.length}`;
   modal.style.opacity = "1";
   modal.style.visibility = "visible";
-}
+};
 
-// --- Ocultar modal ---
-function hideModal() {
+const hideModal = () => {
   modal.style.opacity = "0";
   modal.style.visibility = "hidden";
-}
+};
 
 // --- Cerrar modal ---
 closeModal.addEventListener("click", hideModal);
-modal.addEventListener("click", (e) => {
+modal.addEventListener("click", e => {
   if (e.target === modal) hideModal();
 });
 
 // --- Lógica del botón Check ---
 checkButton.addEventListener("click", () => {
-  let correctCount = 0;
-  quizData.forEach(q => {
-    if (q.selected === q.solution) correctCount++;
-  });
+  const correctCount = quizData.filter(q => q.selected === q.solution).length;
   showModal(correctCount);
 });
 
